@@ -29,7 +29,7 @@ public class CheatCode {
         final char[] chars = code.toCharArray();
         for (int i = 0; i < chars.length; i++) {
             result += chars[i];
-            if (i + 1 < chars.length && chars[i + 1] != chars[i]) {
+            if (i + 1 == chars.length || chars[i + 1] != chars[i]) {
                 result += "+";
             }
         }
