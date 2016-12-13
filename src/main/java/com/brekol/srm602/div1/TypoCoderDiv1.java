@@ -3,83 +3,52 @@ package com.brekol.srm602.div1;
 /**
  * Created by brekol on 13.12.16.
  */
+
+import java.util.HashMap;
+import java.util.Map;
+
 public class TypoCoderDiv1 {
 
     public int getmax(int[] D, int X) {
+        Map<Integer, Integer> m = new HashMap<Integer, Integer>();
+        m.put(X, 0);
 
+        for (int d : D) {
+            Map<Integer, Integer> n = new HashMap<Integer, Integer>();
 
-        MyTree myTree = createMyTree(D, X);
-        return findMax(myTree);
+            for (Map.Entry<Integer, Integer> entry : m.entrySet()) {
+                int key = entry.getKey();
+                int val = entry.getValue();
 
-    }
+                int keyPlus = key + d;
+                int keyMinus = Math.max(0, key - d);
 
-    private int findMax(MyTree myTree) {
+                if (key < 2200) {
+                    int v = val;
+                    if (keyPlus >= 2200) v++;
 
-        if (myTree.end) {
-            return 0;
-        } else {
-            if (myTree.left == null && myTree.right == null) {
-                return myTree.jumps;
-            } else {
-                int leftMax = findMax(myTree.left);
-                int rightMax = findMax(myTree.right);
-                return Math.max(leftMax, rightMax);
-            }
-        }
-    }
-
-    private MyTree createMyTree(int[] d, int x) {
-        MyTree tree = new MyTree();
-        tree.value = x;
-        init(tree, d, 0);
-        return tree;
-    }
-
-    private int init(MyTree myTree, int[] d, int i) {
-        int leftJumps = 0;
-        int rightJumps = 0;
-        if (i < d.length) {
-            myTree.left = new MyTree();
-            if (Math.min(myTree.value, myTree.value + d[i]) >= 2200) {
-                myTree.left.end = true;
-            } else {
-                if (myTree.value < 2200 && myTree.value + d[i] >= 2200) {
-                    myTree.left.jumps += myTree.jumps + 1;
-                    leftJumps = myTree.left.jumps;
+                    if (check(n, keyPlus, v))
+                        n.put(keyPlus, v);
+                    if (check(n, keyMinus, val))
+                        n.put(keyMinus, val);
                 } else {
-                    myTree.left.jumps += myTree.jumps;
+                    if (keyMinus < 2200 && check(n, keyMinus, val + 1))
+                        n.put(keyMinus, val + 1);
                 }
-                myTree.left.value = myTree.value + d[i];
-                init(myTree.left, d, i + 1);
             }
-        }
-        if (i < d.length) {
-            myTree.right = new MyTree();
-            if (Math.min(myTree.value, myTree.value - d[i]) >= 2200) {
-                myTree.right.end = true;
-            } else {
 
-                if (myTree.value >= 2200 && myTree.value - d[i] < 2200) {
-                    myTree.right.jumps += myTree.jumps + 1;
-                    rightJumps = myTree.right.jumps;
-                } else {
-                    myTree.right.jumps += myTree.jumps;
-                }
-                myTree.right.value = myTree.value - d[i];
-                if (myTree.right.value < 0) {
-                    myTree.right.value = 0;
-                }
-                init(myTree.right, d, i + 1);
-            }
+            m = n;
         }
-        return Math.max(leftJumps, rightJumps);
+
+        int res = 0;
+        for (int value : m.values())
+            res = Math.max(res, value);
+
+        return res;
     }
 
-    private class MyTree {
-        int value;
-        int jumps = 0;
-        boolean end = false;
-        MyTree left;
-        MyTree right;
+    private boolean check(Map<Integer, Integer> map, int key, int value) {
+        return !map.containsKey(key) || (map.containsKey(key) && map.get(key) < value);
     }
+
 }
