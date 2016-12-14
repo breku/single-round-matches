@@ -5,7 +5,7 @@ import org.junit.Test;
 
 public class CheatCodeTest {
 
-	private CheatCode uut = new CheatCode;
+	private CheatCode uut = new CheatCode();
 
 	@Test
 	public void test0() {

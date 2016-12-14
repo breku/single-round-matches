@@ -142,7 +142,7 @@ function createTestClass {
     append ""
     append "public class ${CLASS_NAME}Test {"
     append ""
-    append "\tprivate ${CLASS_NAME} uut = new ${CLASS_NAME};"
+    append "\tprivate ${CLASS_NAME} uut = new ${CLASS_NAME}();"
     append ""
     createTestCases
     append "}"
