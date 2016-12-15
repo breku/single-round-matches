@@ -1,30 +1,23 @@
 
 Problem Statement
     
-A popular guessing game is "Guess the number", where one person selects a number in a known range, and another person tries to guess that number. After each guess, the first person reveals whether the guess was correct, too high or too low.
-Pretty soon one learns the best strategy, which is to guess the middle number among those not yet ruled out. If there is no single middle number, then there are two numbers to choose from. In that case, we choose the smallest of those numbers.
-The algorithm can be described like this:
-Init lower and upper bound
-Repeat
-  x = (lower bound + upper bound)/2  (round down if necessary)
-  Make guess x
-  If x is too low, set lower bound to x+1
-  If x is too high, set upper bound to x-1
-Until x is correct
-For instance, assume that the lower and upper bound initally are 1 and 9, respectively. The middle number in this range is 5. If this is "too low", the new bounds become 6 and 9. This range contains four numbers, and there is thus no single middle number. The two numbers in the middle are 7 and 8, and the smallest of these is 7, so our next guess then becomes 7.
-Create a class GuessTheNumber which contains the method noGuesses which takes an int upper, the initial upper bound of the range (the inital lower bound is always 1), and an int answer, the number selected by the first person. The method should return an int representing the total number of guesses required for the second person to guess the correct number using the method described above.
+The base of a number system is the number of different values each digit can represent. For example, in base-2 (binary), there are 2 values each digit can take: 0 and 1. In base-10, a digit can take values 0 through 9, inclusive. Sometimes, it is difficult to determine which base a numerical expression is in. An equation is valid for a given base if all of the digits are less than the base, and the numerical meaning of the equation is correct. For example, "1+1=10" for base-10 satisfies the rule that the digits are all less than 10, but 1+1 = 2 in base-10, so the equation is not correct for base-10.
+If we assume that the characters '0'-'9' represent the values 0 - 9, and the characters 'A'-'J' represent the values 10 - 19, then we can represent numbers with a base up to 20. The equation will be in the following form:
+<num>+<num>=<num>
+Where each <num> is a String consisting of characters '0'-'9' and 'A'-'J', which does not have any extra leading zeros, and is at most 5 digits long.
+Given an equation as defined above, you should return which bases in the range of 2 to 20, inclusive, are valid for the equation. Return the bases in a int[] in ascending order.
 Definition
     
 Class:
-GuessTheNumber
+BaseMystery
 Method:
-noGuesses
+getBase
 Parameters:
-int, int
+String
 Returns:
-int
+int[]
 Method signature:
-int noGuesses(int upper, int answer)
+int[] getBase(String equation)
 (be sure your method is public)
 Limits
     
@@ -34,45 +27,59 @@ Memory limit (MB):
 64
 Constraints
 -
-upper will be between 1 and 1000, inclusive.
+equation will be of the form "<num>+<num>=<num>"
 -
-answer will be between 1 and upper, inclusive.
+Each <num> in equation will have between 1 and 5 characters, inclusive.
+-
+Each <num> in equation will consist only of numeric digits '0' - '9' and capital letters 'A' - 'J', and will not have extra leading zeros.
 Examples
 0)
 
     
-9
-6
-Returns: 3
-The first guess will be (1+9)/2=5, which is too low. The new lower bound then becomes 5+1=6.
-The second guess then becomes (6+9)/2=7, which is too high. The new upper bound then becomes 7-1=6.
-The third guess is then of course (6+6)/2)=6, which is correct. So, three guesses were required, and the method thus returns 3.
+"1+1=2"
+Returns:
+{ 3,  4,  5,  6,  7,  8,  9,  10,  11,  12,  13,  14,  15,  16,  17,  18, 19,  20 }
+The only base which this does not work for is base-2. In base 2, 2 is represented by "10"
 1)
 
     
-1000
-750
-Returns: 2
-The first guess will be 500, the second guess 750.
+"1+1=10"
+Returns: { 2 }
+The same equation valid for base 2.
 2)
 
     
-643
-327
-Returns: 7
-The guesses are 322, 483, 402, 362, 342, 332 and finally 327, so the method returns 7.
+"1+1=3"
+Returns: { }
+1+1 is never 3, no matter what base you are in.
 3)
 
     
-157
-157
-Returns: 8
-Here the guesses are 79, 118, 138, 148, 153, 155, 156 and finally 157. The method thus returns 8.
+"ABCD+211=B000"
+Returns: { 14 }
+In base-14, the digits are 0-9, A-D. Adding one to the ones column yields 10 base-14, which carries over to make the 10's column a 'D'. Adding 1 to that column yields 10 again, which carries and makes the 100's column a 'C'. Adding 2 to C yields 10 again, which adds 1 to the 1000's column, resulting in B000.
 4)
 
     
-128
-64
-Returns: 1
+"ABCD+322=B000"
+Returns: { 15 }
+For base-15, we have increased the number required to wrap to 0 by 1.
+5)
+
+    
+"1+0=1"
+Returns: { 2,  3,  4,  5,  6,  7,  8,  9,  10,  11,  12,  13,  14,  15,  16,  17,18,  19,  20 }
+This is valid for all bases.
+6)
+
+    
+"GHIJ+1111=HJ00"
+Returns: { 20 }
+
+7)
+
+    
+"1234+8765=9999"
+Returns: { 10,  11,  12,  13,  14,  15,  16,  17,  18,  19,  20 }
 
 This problem statement is the exclusive and proprietary property of TopCoder, Inc. Any unauthorized use or reproduction of this information without the prior written consent of TopCoder, Inc. is strictly prohibited. (c)2003, TopCoder, Inc. All rights reserved.
