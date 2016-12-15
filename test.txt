@@ -3,44 +3,53 @@
 import org.fest.assertions.Assertions;
 import org.junit.Test;
 
-public class CheatCodeTest {
+public class GuessTheNumberTest {
 
-	private CheatCode uut = new CheatCode();
+	private GuessTheNumber uut = new GuessTheNumber();
 
 	@Test
 	public void test0() {
 		// when
-		final int[] result = uut.matches( "UUDDLRRLLRBASS", new String[] {"UUDDLRLRBA","UUDUDLRLRABABSS","DDUURLRLAB","UUDDLRLRBASS","UDLRRLLRBASS"});
+		final int result = uut.noGuesses( 9, 6);
 
 		// then
-		Assertions.assertThat(result).isEqualTo(new int[] { 0, 3, 4 });
+		Assertions.assertThat(result).isEqualTo(3);
 	}
 
 	@Test
 	public void test1() {
 		// when
-		final int[] result = uut.matches( "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", new String[] {"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"});
+		final int result = uut.noGuesses( 1000, 750);
 
 		// then
-		Assertions.assertThat(result).isEqualTo(new int[] { 0 });
+		Assertions.assertThat(result).isEqualTo(2);
 	}
 
 	@Test
 	public void test2() {
 		// when
-		final int[] result = uut.matches( "IDDQDDTSFHHALL", new String[] {"FHHALL", "FHSHH", "IDBEHOLDA", "IDBEHOLDI", "IDBEHOLDL","IDBEHOLDR", "IDBEHOLDS", "IDBEHOLDV", "IDCHOPPERS", "IDCLEV","IDCLIP", "IDDQD", "IDDT", "IDFA", "IDKFA", "IDMYPOS", "IDMUS"});
+		final int result = uut.noGuesses( 643, 327);
 
 		// then
-		Assertions.assertThat(result).isEqualTo(new int[] { 0, 11 });
+		Assertions.assertThat(result).isEqualTo(7);
 	}
 
 	@Test
 	public void test3() {
 		// when
-		final int[] result = uut.matches( "AABBCCDDEEFFGGHHIIJJKKLLMMNNOOPPQQRRSSTTUUVVWWXXYY", new String[] {"ABCDE", "BCDEF", "CDEFG", "DEFGH", "EFGHI","FGHIJ", "GHIJK", "HIJKL", "IJKLM", "JKLMN","KLMNO", "LMNOP", "MNOPQ", "NOPQR", "OPQRS","PQRST", "QRSTU", "RSTUV", "STUVW", "TUVWX","UVWXY", "VWXYZ", "WXYZA", "XYZAB", "YZABC","ZABCD"});
+		final int result = uut.noGuesses( 157, 157);
 
 		// then
-		Assertions.assertThat(result).isEqualTo(new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,16, 17, 18, 19, 20 });
+		Assertions.assertThat(result).isEqualTo(8);
+	}
+
+	@Test
+	public void test4() {
+		// when
+		final int result = uut.noGuesses( 128, 64);
+
+		// then
+		Assertions.assertThat(result).isEqualTo(1);
 	}
 
 }

@@ -1,37 +1,30 @@
 
 Problem Statement
     
-Let's say you have a binary string such as the following:
-011100011
-One way to encrypt this string is to add to each digit the sum of its adjacent digits. For example, the above string would become:
-123210122
-In particular, if P is the original string, and Q is the encrypted string, then Q[i] = P[i-1] + P[i] + P[i+1] for all digit positions i. Characters off the left and right edges of the string are treated as zeroes.
-An encrypted string given to you in this format can be decoded as follows (using 123210122 as an example):
-Assume P[0] = 0.
-Because Q[0] = P[0] + P[1] = 0 + P[1] = 1, we know that P[1] = 1.
-Because Q[1] = P[0] + P[1] + P[2] = 0 + 1 + P[2] = 2, we know that P[2] = 1.
-Because Q[2] = P[1] + P[2] + P[3] = 1 + 1 + P[3] = 3, we know that P[3] = 1.
-Repeating these steps gives us P[4] = 0, P[5] = 0, P[6] = 0, P[7] = 1, and P[8] = 1.
-We check our work by noting that Q[8] = P[7] + P[8] = 1 + 1 = 2. Since this equation works out, we are finished, and we have recovered one possible original string.
-Now we repeat the process, assuming the opposite about P[0]:
-Assume P[0] = 1.
-Because Q[0] = P[0] + P[1] = 1 + P[1] = 1, we know that P[1] = 0.
-Because Q[1] = P[0] + P[1] + P[2] = 1 + 0 + P[2] = 2, we know that P[2] = 1.
-Now note that Q[2] = P[1] + P[2] + P[3] = 0 + 1 + P[3] = 3, which leads us to the conclusion that P[3] = 2. However, this violates the fact that each character in the original string must be '0' or '1'. Therefore, there exists no such original string P where the first digit is '1'.
-Note that this algorithm produces at most two decodings for any given encrypted string. There can never be more than one possible way to decode a string once the first binary digit is set.
-Given a String message, containing the encrypted string, return a String[] with exactly two elements. The first element should contain the decrypted string assuming the first character is '0'; the second element should assume the first character is '1'. If one of the tests fails, return the string "NONE" in its place. For the above example, you should return {"011100011", "NONE"}.
+A popular guessing game is "Guess the number", where one person selects a number in a known range, and another person tries to guess that number. After each guess, the first person reveals whether the guess was correct, too high or too low.
+Pretty soon one learns the best strategy, which is to guess the middle number among those not yet ruled out. If there is no single middle number, then there are two numbers to choose from. In that case, we choose the smallest of those numbers.
+The algorithm can be described like this:
+Init lower and upper bound
+Repeat
+  x = (lower bound + upper bound)/2  (round down if necessary)
+  Make guess x
+  If x is too low, set lower bound to x+1
+  If x is too high, set upper bound to x-1
+Until x is correct
+For instance, assume that the lower and upper bound initally are 1 and 9, respectively. The middle number in this range is 5. If this is "too low", the new bounds become 6 and 9. This range contains four numbers, and there is thus no single middle number. The two numbers in the middle are 7 and 8, and the smallest of these is 7, so our next guess then becomes 7.
+Create a class GuessTheNumber which contains the method noGuesses which takes an int upper, the initial upper bound of the range (the inital lower bound is always 1), and an int answer, the number selected by the first person. The method should return an int representing the total number of guesses required for the second person to guess the correct number using the method described above.
 Definition
     
 Class:
-BinaryCode
+GuessTheNumber
 Method:
-decode
+noGuesses
 Parameters:
-String
+int, int
 Returns:
-String[]
+int
 Method signature:
-String[] decode(String message)
+int noGuesses(int upper, int answer)
 (be sure your method is public)
 Limits
     
@@ -41,46 +34,45 @@ Memory limit (MB):
 64
 Constraints
 -
-message will contain between 1 and 50 characters, inclusive.
+upper will be between 1 and 1000, inclusive.
 -
-Each character in message will be either '0', '1', '2', or '3'.
+answer will be between 1 and upper, inclusive.
 Examples
 0)
 
     
-"123210122"
-Returns: { "011100011",  "NONE" }
-The example from above.
+9
+6
+Returns: 3
+The first guess will be (1+9)/2=5, which is too low. The new lower bound then becomes 5+1=6.
+The second guess then becomes (6+9)/2=7, which is too high. The new upper bound then becomes 7-1=6.
+The third guess is then of course (6+6)/2)=6, which is correct. So, three guesses were required, and the method thus returns 3.
 1)
 
     
-"11"
-Returns: { "01",  "10" }
-We know that one of the digits must be '1', and the other must be '0'. We return both cases.
+1000
+750
+Returns: 2
+The first guess will be 500, the second guess 750.
 2)
 
     
-"22111"
-Returns: { "NONE",  "11001" }
-Since the first digit of the encrypted string is '2', the first two digits of the original string must be '1'. Our test fails when we try to assume that P[0] = 0.
+643
+327
+Returns: 7
+The guesses are 322, 483, 402, 362, 342, 332 and finally 327, so the method returns 7.
 3)
 
     
-"123210120"
-Returns: { "NONE",  "NONE" }
-This is the same as the first example, but the rightmost digit has been changed to something inconsistent with the rest of the original string. No solutions are possible.
+157
+157
+Returns: 8
+Here the guesses are 79, 118, 138, 148, 153, 155, 156 and finally 157. The method thus returns 8.
 4)
 
     
-"3"
-Returns: { "NONE",  "NONE" }
-
-5)
-
-    
-"12221112222221112221111111112221111"
-Returns: 
-{ "01101001101101001101001001001101001",
-  "10110010110110010110010010010110010" }
+128
+64
+Returns: 1
 
 This problem statement is the exclusive and proprietary property of TopCoder, Inc. Any unauthorized use or reproduction of this information without the prior written consent of TopCoder, Inc. is strictly prohibited. (c)2003, TopCoder, Inc. All rights reserved.
