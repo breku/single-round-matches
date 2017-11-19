@@ -183,11 +183,8 @@ function createClass {
     appendToClass "\t return null;"
     appendToClass "\t}"
     appendToClass "}"
-
-
-
-
 }
+
 
 function createTestClass {
     createHeadline
