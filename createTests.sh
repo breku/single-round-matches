@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+# Usage
+# ./createTests.sh inputQuestion.txt srm723.div2
+
+
 INPUT_FILE=$1
 PACKAGE_NAME=$2
 declare -A FILE_LINES
