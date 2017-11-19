@@ -1,34 +1,47 @@
 #!/usr/bin/env bash
 
 INPUT_FILE=$1
+PACKAGE_NAME=$2
 declare -A FILE_LINES
 declare -A EXPECTED_ARRAY
 declare -A INPUT_PARAMS_ARRAY
 declare -A PARAMETER_TYPES_ARRAY
 
-OUTPUT_FILE_NAME="test.txt"
+OUTPUT_TEST_FILE_NAME="test.txt"
+OUTPUT_CLASS_FILE_NAME="class.txt"
 
 function readFile {
 	COUNTER=0
 	while read p; do
 	  FILE_LINES[$COUNTER]=$p
 	  COUNTER=$(( $COUNTER + 1 ))
-	done <$INPUT_FILE	
+	done <$INPUT_FILE
 }
 
 function init {
-    echo > $OUTPUT_FILE_NAME
+    echo > $OUTPUT_TEST_FILE_NAME
+    echo > $OUTPUT_CLASS_FILE_NAME
+
+    if [ "x${PACKAGE_NAME}" = "x" ]; then
+        PACKAGE_NAME="srm"
+    fi
 }
 
-function append {
+function appendToTest {
     text=$1
-    echo -e $text >> $OUTPUT_FILE_NAME
+    echo -e $text >> $OUTPUT_TEST_FILE_NAME
+}
+
+function appendToClass {
+    text=$1
+    echo -e $text >> $OUTPUT_CLASS_FILE_NAME
 }
 
 function createHeadline {
-    append ""
-    append "import org.fest.assertions.Assertions;"
-    append "import org.junit.Test;"
+    appendToTest ""
+    appendToTest "package com.brekol.$PACKAGE_NAME;"
+    appendToTest "import org.fest.assertions.Assertions;"
+    appendToTest "import org.junit.Test;"
 }
 
 function initDescription {
@@ -44,6 +57,12 @@ function initDescription {
         if [ "${FILE_LINES[$i]}" = "Method:" ]; then
                METHOD="${FILE_LINES[$(($i+1))]}"
         fi
+
+        if [ "${FILE_LINES[$i]}" = "Method signature:" ]; then
+               METHOD_SIGNATURE="${FILE_LINES[$(($i+1))]}"
+        fi
+
+
 
         if [ "${FILE_LINES[$i]}" = "Parameters:" ]; then
                PARAMETERS="${FILE_LINES[$(($i+1))]}"
@@ -97,9 +116,9 @@ function createTestCases {
 
     for i in `seq 0 $(($NUMBER_OF_EXAMPLES-1))`;
     do
-        append "\t@Test"
-        append "\tpublic void test$i() {"
-        append "\t\t// when"
+        appendToTest "\t@Test"
+        appendToTest "\tpublic void test$i() {"
+        appendToTest "\t\t// when"
 
         t1="\t\tfinal $RETURN_TYPE result = uut.$METHOD("
         params=""
@@ -119,39 +138,74 @@ function createTestCases {
             fi
 
         done
-        append "$t1 $params"
+        appendToTest "$t1 $params"
 
 
-        append ""
-        append "\t\t// then"
+        appendToTest ""
+        appendToTest "\t\t// then"
         if [[ "$RETURN_TYPE" == *"[]" ]]; then
-            append "\t\tAssertions.assertThat(result).isEqualTo(new $RETURN_TYPE ${EXPECTED_ARRAY[$i]});"
+            appendToTest "\t\tAssertions.assertThat(result).isEqualTo(new $RETURN_TYPE ${EXPECTED_ARRAY[$i]});"
         else
-            append "\t\tAssertions.assertThat(result).isEqualTo(${EXPECTED_ARRAY[$i]});"
+            appendToTest "\t\tAssertions.assertThat(result).isEqualTo(${EXPECTED_ARRAY[$i]});"
         fi
 
 
 
-        append "\t}"
-        append ""
+        appendToTest "\t}"
+        appendToTest ""
     done
 
 }
 
+function createActualJavaFiles {
+    local DEST_CLASS_DIR="src/main/java/com/brekol/$PACKAGE_NAME"
+    local DEST_TEST_CLASS_DIR="src/test/java/com/brekol/$PACKAGE_NAME"
+    mkdir -p $DEST_CLASS_DIR $DEST_TEST_CLASS_DIR
+    cp $OUTPUT_CLASS_FILE_NAME "$DEST_CLASS_DIR/$CLASS_NAME.java"
+    cp $OUTPUT_TEST_FILE_NAME "$DEST_TEST_CLASS_DIR/${CLASS_NAME}Test.java"
+
+}
+
+function createClass {
+    appendToClass ""
+    appendToClass "package com.brekol.$PACKAGE_NAME;"
+    appendToClass ""
+    appendToClass "import java.util.*;"
+    appendToClass "import java.util.regex.*;"
+    appendToClass "import java.text.*;"
+    appendToClass "import java.math.*;"
+    appendToClass "import java.awt.geom.*;"
+    appendToClass "import java.util.*;"
+    appendToClass ""
+    appendToClass "public class ${CLASS_NAME} {"
+    appendToClass ""
+    appendToClass "\tpublic $METHOD_SIGNATURE {"
+    appendToClass "\t return null;"
+    appendToClass "\t}"
+    appendToClass "}"
+
+
+
+
+}
+
 function createTestClass {
-    append ""
-    append "public class ${CLASS_NAME}Test {"
-    append ""
-    append "\tprivate ${CLASS_NAME} uut = new ${CLASS_NAME}();"
-    append ""
+    createHeadline
+    appendToTest ""
+    appendToTest "public class ${CLASS_NAME}Test {"
+    appendToTest ""
+    appendToTest "\tprivate ${CLASS_NAME} uut = new ${CLASS_NAME}();"
+    appendToTest ""
     createTestCases
-    append "}"
+    appendToTest "}"
 
 }
 
 init
 readFile
-createHeadline
+
 
 initDescription
 createTestClass
+createClass
+createActualJavaFiles
